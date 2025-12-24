@@ -3,9 +3,10 @@ import Header from "./Header";
 import TicketBoard from "./TicketBoard";
 import Sidebar from "./Sidebar";
 import CreateProjectModal from "./CreateProjectModal";
-import { getProjects } from "@/api/project.api";
+import { getProjects, deleteProject } from "@/api/project.api";
 import { getTicketsByProject } from "@/api/ticket.api";
 import { useAuth } from "../context/AuthContext";
+import { customToast } from "@/lib/toastConfig";
 
 // Define strict interfaces to match UI expectations
 interface Project {
@@ -34,7 +35,7 @@ const DashboardLayout = () => {
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [priorityFilter, setPriorityFilter] = useState<string>("");
 
-  // Memoize the selected project object to avoid repeated searching
+  // Memoize the selected project object
   const selectedProject = useMemo(() => 
     projects.find(p => p._id === selectedProjectId) || null
   , [projects, selectedProjectId]);
@@ -44,23 +45,21 @@ const DashboardLayout = () => {
     try {
       setLoadingProjects(true);
       const data = await getProjects();
-      // Assuming your API returns { projects: Project[] }
       setProjects(data.projects || []);
     } catch (error) {
       console.error("Failed to load projects:", error);
+      customToast.error("Could not load projects");
     } finally {
       setLoadingProjects(false);
     }
   }, []);
 
-  // Fetch projects on mount
-  useEffect(() => {
-    loadProjects();
-  }, [loadProjects]);
-
   // Fetch tickets when project changes
   const loadTickets = useCallback(async () => {
-    if (!selectedProjectId) return;
+    if (!selectedProjectId) {
+      setTickets([]);
+      return;
+    };
     setLoadingTickets(true);
     try {
       const data = await getTicketsByProject(selectedProjectId);
@@ -73,9 +72,34 @@ const DashboardLayout = () => {
     }
   }, [selectedProjectId]);
 
+  // Initial Load
+  useEffect(() => {
+    loadProjects();
+  }, [loadProjects]);
+
+  // Load tickets when selection changes
   useEffect(() => {
     loadTickets();
   }, [loadTickets]);
+
+  // Project Deletion Logic
+  const handleDeleteProject = async (projectId: string) => {
+    try {
+      await deleteProject(projectId);
+      customToast.success("Project deleted successfully");
+      
+      // If we deleted the project currently being viewed, reset the view
+      if (selectedProjectId === projectId) {
+        setSelectedProjectId(null);
+      }
+      
+      // Refresh the list
+      await loadProjects();
+    } catch (error) {
+      customToast.error("Failed to delete project");
+      throw error; // Throwing so Sidebar can stop its loading state
+    }
+  };
 
   // Reset filters when project changes
   useEffect(() => {
@@ -109,7 +133,7 @@ const DashboardLayout = () => {
       {/* Sidebar Component */}
       <Sidebar
         projects={projects.map(p => ({
-          id: p._id, // Mapping _id from DB to id for component
+          id: p._id,
           name: p.name,
           ticketCount: p.ticketCount ?? 0,
         }))}
@@ -121,6 +145,7 @@ const DashboardLayout = () => {
         isOpen={isSidebarOpen}
         isLoading={loadingProjects}
         onCreateProject={() => setIsCreateProjectModalOpen(true)}
+        onDeleteProject={handleDeleteProject}
       />
 
       {/* Main Content Area */}
