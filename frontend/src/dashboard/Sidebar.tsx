@@ -26,7 +26,7 @@ interface SidebarProps {
   isOpen: boolean;
   isLoading?: boolean;
   onCreateProject?: () => void;
-  onDeleteProject?: (projectId: string) => Promise<void>; // Updated to Promise for loading state
+  onDeleteProject?: (projectId: string) => Promise<void>;  
 }
 
 const Sidebar = ({
@@ -98,9 +98,9 @@ const Sidebar = ({
                 variant="ghost"
                 size="icon"
                 onClick={onCreateProject}
-                className="h-7 w-7 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-full"
+                className="h-7 w-10 text-slate-500 hover:text-indigo-600 hover:bg-indigo-200 bg-indigo-100 rounded"
               >
-                <Plus className="w-4 h-4" />
+               <Plus className="w-6 h-6" />
               </Button>
             )}
           </div>
@@ -148,7 +148,7 @@ const Sidebar = ({
                         variant="ghost"
                         size="icon"
                         onClick={() => setProjectToDelete(project)}
-                        className="opacity-0 group-hover:opacity-100 h-8 w-8 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                        className="h-8 w-8 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all cursor-pointer"
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>
@@ -165,19 +165,19 @@ const Sidebar = ({
       <AlertDialog open={!!projectToDelete} onOpenChange={() => !isDeleting && setProjectToDelete(null)}>
         <AlertDialogContent className="rounded-2xl">
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete the project <span className="font-bold text-slate-900">"{projectToDelete?.name}"</span> and all associated tickets. This action cannot be undone.
+              This will permanently delete the project <span className="font-semibold text-slate-900">"{projectToDelete?.name}"</span> and all associated tickets. This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting} className="rounded-xl">Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={isDeleting} className="rounded">Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={(e) => {
                 e.preventDefault();
                 handleDeleteConfirm();
               }}
-              className="bg-red-600 hover:bg-red-700 rounded-xl"
+              className="bg-red-600 hover:bg-red-700 rounded"
               disabled={isDeleting}
             >
               {isDeleting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Trash2 className="w-4 h-4 mr-2" />}

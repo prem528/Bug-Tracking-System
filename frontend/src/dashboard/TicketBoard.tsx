@@ -86,7 +86,7 @@ const TicketBoard = ({
                   <h2 className="text-3xl font-semibold text-slate-900 tracking-tight">Tickets</h2>
                 </div>
                 <p className="text-lg text-slate-500 font-medium">
-                  {tickets.length} total tickets
+                  {loading ? "Loading..." : `${tickets.length} total tickets`}
                 </p>
               </div>
 
@@ -159,7 +159,25 @@ const TicketBoard = ({
           {/* Ticket List */}
           <div className="space-y-3">
             {loading ? (
-              [1, 2, 3].map((i) => <div key={i} className="h-24 bg-white/50 border  border-slate-100 rounded-2xl animate-pulse" />)
+              [1, 2, 3, 4].map((i) => (
+                <div
+                  key={i}
+                  className="bg-white p-5 rounded-2xl border border-slate-300 animate-pulse flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+                >
+                  <div className="space-y-2 flex-1">
+                    {/* Title skeleton */}
+                    <div className="h-5 bg-slate-200 rounded-md w-3/4" />
+                    {/* Badges and info skeleton */}
+                    <div className="flex flex-wrap items-center gap-2">
+                      <div className="h-5 bg-slate-200 rounded-md w-16" />
+                      <div className="h-5 bg-slate-200 rounded-md w-20" />
+                      <div className="h-4 bg-slate-200 rounded-md w-24 ml-2" />
+                    </div>
+                  </div>
+                  {/* Button skeleton */}
+                  <div className="h-10 bg-slate-200 rounded-xl w-32" />
+                </div>
+              ))
             ) : tickets.length === 0 ? (
               <div className="py-20 text-center bg-white rounded-3xl border border-dashed border-slate-200">
                 <p className="text-slate-400 font-medium">No tickets found for this project.</p>
