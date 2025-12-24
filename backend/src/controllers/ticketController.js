@@ -42,7 +42,12 @@ export const getTickets = async (req, res) => {
       .populate("createdBy", "name email")
       .populate("project", "name");
 
-    res.status(200).json(tickets);
+    const total = await ticketModel.countDocuments(filter);
+
+    res.status(200).json({
+      tickets,
+      total,
+    });
   } catch (error) {
     res.status(500).json({ message: "Server error" });
   }
