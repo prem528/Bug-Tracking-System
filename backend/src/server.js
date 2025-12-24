@@ -4,7 +4,6 @@ import dotenv from "dotenv";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoute.js";
 
-import protectedRoutes from "./routes/protectedRoute.js";
 import ticketRoutes from "./routes/ticketRoute.js";
 import projectRoutes from "./routes/projectRoute.js";
 import userRoutes from "./routes/userRoute.js";
@@ -18,15 +17,13 @@ app.use(express.json());
 
 connectDB();
 
+// Routes
 app.use("/api/auth", authRoutes);
-
 app.use("/api/users", userRoutes);
-
 app.use("/api/projects", projectRoutes);
-
 app.use("/api/tickets", ticketRoutes);
 
-app.use("/api/protected", protectedRoutes);
+
 
 app.get("/", (req, res) => {
   res.send("Bug Tracking API is running");
